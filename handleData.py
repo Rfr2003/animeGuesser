@@ -86,9 +86,6 @@ def encodeData(data):
 
     return data
 
-encodedData = encodeData(loadDataSet())
-print(encodedData)
-
 
 def loadTitle():
     columns_names = ['title']
@@ -138,3 +135,5 @@ def loadXandY():
     y = data['rating']
 
     return X, y
+
+createEncoder()

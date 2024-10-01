@@ -17,7 +17,6 @@ def fetch_data(start, nb):
         url = BASE_URL + 'anime/' + str(i) + '/full'
         r = requests.get(url)
         if r.status_code == 200:
-            print(url)
             data = r.json()
             titles = data['data']['titles']
             episodes = data['data']['episodes']
@@ -48,6 +47,8 @@ def fetch_data(start, nb):
             nb_succeful += 1
             last_sucessful_episode = i
 
+            print(url + "---" + str(nb_succeful))
+
             if nb_request_per_second >= request_per_second:
                 nb_request_per_second = 0
                 time.sleep(1)
@@ -59,4 +60,4 @@ def fetch_data(start, nb):
 
     df.to_csv('data/data.csv', index=False, mode='a', header=False)
 
-fetch_data(13463, 500)
+fetch_data(18724, 500)

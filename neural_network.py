@@ -5,11 +5,16 @@ from handleData import loadDataSet
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
+from sklearn.preprocessing import MinMaxScaler
 
 df = loadDataSet().drop(columns=['title'], axis=1)
 df.dropna(inplace=True)
+scaler = MinMaxScaler()
+df['episodes'] = scaler.fit_transform(df['episodes'].values.reshape(-1,1))
+print(df['episodes'].head())
 dfX = pd.get_dummies(df.drop(['rating'], axis=1), columns=['studio', 'genre1', 'genre2'], dtype=int)
-dfy = df['rating'].replace({'PG-13 - Teens 13 or older':2, 'G - All Ages':0, 'PG - Children':1,'R - 17+ (violence & profanity)':3, 'R+ - Mild Nudity':4, 'Rx - Hentai':5})
+df['rating'].replace({'PG - Children': 'G - All Ages', 'R - 17+ (violence & profanity)': 'PG-13 - Teens 13 or older', 'R+ - Mild Nudity':'PG-13 - Teens 13 or older'}, inplace=True)
+dfy = df['rating'].replace({'PG-13 - Teens 13 or older':1, 'G - All Ages':0,  'Rx - Hentai':2})
 print(dfy.value_counts())
 X = torch.tensor(dfX.values, dtype=torch.float)
 y = torch.tensor(dfy.values, dtype=torch.long)
@@ -18,17 +23,15 @@ print(y.shape)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 model = nn.Sequential(
-    nn.Linear(355, 110),
+    nn.Linear(X.shape[1], 350),
     nn.ReLU(),
-    nn.Linear(110, 100),
-    nn.ReLU(),
-    nn.Linear(100, 6)
+    nn.Linear(350, 6)
 )
 
 Closs = nn.CrossEntropyLoss()
 opt = optim.Adam(model.parameters(), lr=0.001)
 
-epochs = 3000
+epochs = 5000
 
 for epoch in range(epochs):
     predictions = model(X_train)
@@ -40,7 +43,7 @@ for epoch in range(epochs):
     if epoch % 100 == 0:
         predicted_labels = torch.argmax(predictions, dim=1)
         accuracy = accuracy_score(y_train, predicted_labels)
-        print(f'Epoch [{epoch + 1}/{epochs}], CELoss: {loss.item():.4f}, Accuracy: {accuracy:.4f}')
+        print(f'Epoch [{epoch}/{epochs}], CELoss: {loss.item():.4f}, Accuracy: {accuracy:.4f}')
 
 
 model.eval()
