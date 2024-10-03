@@ -1,4 +1,5 @@
 import numpy as np
+from matplotlib import pyplot as plt
 from sklearn.feature_extraction.text import HashingVectorizer
 import re
 from nltk.corpus import stopwords
@@ -30,11 +31,6 @@ def createHashingVectorizer():
                              lowercase=False)
 
     data = pd.read_csv('data/data.csv', usecols=[6], header=None)
-
-    vect.fit(data)
-
-    pickle.dump(stop, open(os.path.join('data', 'stopwords.pkl'), 'wb'), protocol=4)
-    pickle.dump(vect, open(os.path.join('data', 'HashingVectorizer.pkl'), 'wb'), protocol=4)
 
 def loadDataSet():
     columns_names = ['title', 'episodes', 'rating', 'studio', 'genre1', 'genre2']
@@ -136,4 +132,29 @@ def loadXandY():
 
     return X, y
 
-createEncoder()
+def show_data():
+    data = loadDataSet()
+    data.dropna(inplace=True)
+
+    genres = data['genre1'].unique()
+    rates = data['rating'].unique()
+
+    genres_count = []
+    rates_count = []
+
+    for genre in genres:
+        genres_count.append(len(data[data['genre1'] == genre]))
+
+    for rate in rates:
+        rates_count.append(len(data[data['rating'] == rate]))
+
+    plt.figure(figsize=(25,25))
+    plt.pie(genres_count, labels=genres, autopct='%1.1f%%', radius=1)
+    plt.show()
+    plt.close()
+
+    plt.pie(rates_count, labels=rates, autopct='%1.1f%%', radius=1)
+    plt.show()
+    plt.close()
+
+show_data()
