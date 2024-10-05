@@ -25,7 +25,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 model = nn.Sequential(
     nn.Linear(X.shape[1], 350),
     nn.ReLU(),
-    nn.Linear(350, 6)
+    nn.Linear(350, 3)
 )
 
 Closs = nn.CrossEntropyLoss()
@@ -48,7 +48,6 @@ for epoch in range(epochs):
 
 model.eval()
 with torch.no_grad():
-    ## YOUR SOLUTION HERE ##
     predictions = model(X_test)
     predicted_labels = torch.argmax(predictions, dim=1)
     accuracy = accuracy_score(y_test, predicted_labels)

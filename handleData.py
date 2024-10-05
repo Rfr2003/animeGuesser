@@ -138,6 +138,13 @@ def show_data():
 
     genres = data['genre1'].unique()
     rates = data['rating'].unique()
+    studios = []
+    studios_count = []
+    for studio in data['studio'].unique():
+        count = len(data[data['studio'] == studio])
+        if count > 9:
+            studios.append(studio)
+            studios_count.append(count)
 
     genres_count = []
     rates_count = []
@@ -154,6 +161,11 @@ def show_data():
     plt.close()
 
     plt.pie(rates_count, labels=rates, autopct='%1.1f%%', radius=1)
+    plt.show()
+    plt.close()
+
+    plt.figure(figsize=(25, 25))
+    plt.pie(studios_count, labels=studios, autopct='%1.1f%%', radius=1)
     plt.show()
     plt.close()
 
